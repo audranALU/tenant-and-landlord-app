@@ -12,7 +12,20 @@
           "package_name": "com.example.tenant_and_landlord_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "228994611753-avequcedef9voo4cisqfp0sphei648g6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tenant_and_landlord_app",
+            "certificate_hash": "9879153b55253c33e9789c3b534ae389c85e553e"
+          }
+        },
+        {
+          "client_id": "228994611753-9m9e3ralvasnkq7nn4n681df1p1curki.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD0LiZKS4ON9IpUxXRXbza1iXFTKl9kChw"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "228994611753-9m9e3ralvasnkq7nn4n681df1p1curki.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

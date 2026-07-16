@@ -24,7 +24,31 @@ class AuthService {
 
   }
 
+Future<UserCredential?> createAccount(
+  String email,
+  String password,
+) async {
 
+  try {
+
+    UserCredential userCredential =
+        await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+              email: email,
+              password: password,
+            );
+
+    return userCredential;
+
+  } catch (e) {
+
+    print("Register error: $e");
+
+    return null;
+
+  }
+
+}
 
   Future<UserCredential?> signInWithGoogle() async {
 

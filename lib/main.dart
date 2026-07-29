@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'core/providers/auth_provider.dart';
+import 'core/theme/app_theme.dart';
 import 'core/widgets/auth_wrapper.dart';
+import 'providers/landlord_provider.dart';
 
 
 
@@ -45,6 +47,10 @@ class MyApp extends StatelessWidget {
           create: (_) => AuthProvider(),
         ),
 
+        ChangeNotifierProvider(
+          create: (_) => LandlordProvider(),
+        ),
+
       ],
 
 
@@ -52,6 +58,9 @@ class MyApp extends StatelessWidget {
 
         debugShowCheckedModeBanner: false,
 
+        title: 'iRembo Maintenance',
+
+        theme: AppTheme.lightTheme,
 
         home: const AuthWrapper(),
 

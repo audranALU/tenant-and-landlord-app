@@ -41,5 +41,9 @@ app.*.map.json
 
 # Android Studio will place build artifacts here
 /android/app/debug
+
+# Node modules in Firebase functions or nested packages
+**/node_modules/
+notification/firebase/functions/node_modules/
 /android/app/profile
 /android/app/release

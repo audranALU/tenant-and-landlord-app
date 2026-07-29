@@ -37,8 +37,10 @@ dependencies:
   firebase_core: ^4.12.1
   firebase_auth: ^6.5.6
   cloud_firestore: ^6.7.1
-  google_sign_in: ^6.2.1
   firebase_storage: ^13.4.5
+  google_sign_in: ^6.2.1
+
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -92,6 +94,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-  cloud_firestore: ^5.6.12
-firebase_storage: ^12.4.10
-image_picker: ^1.1.2

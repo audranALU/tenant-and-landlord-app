@@ -44,7 +44,9 @@ class _CompleteTaskScreenState extends State<CompleteTaskScreen> {
                       widget.request.id,
                       notes.text,
                     );
-                if (mounted) Navigator.pop(context);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
               },
               child: const Text("Submit Completion"),
             )

@@ -1,0 +1,48 @@
+rules_version = '2';
+
+// Deploy with: firebase deploy --only firestore:rules --project tenant-and-landlord-app-fad4c
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // ---------------------------------------------------------------
+    // users/{userId}
+    // Profile header + stat cards (ProfileScreen) and settings toggles
+    // (SettingsScreen). Stats like propertiesCount/activeTasksCount and
+    // isPremium are intentionally NOT in the client-writable field list —
+    // those should only be changed by trusted backend code (Cloud
+    // Functions using the Admin SDK bypass these rules entirely).
+    // ---------------------------------------------------------------
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['name', 'photoUrl', 'settings', 'fcmTokens']);
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------
+    // notifications/{notificationId}
+    // Notification documents are only ever created by Cloud Functions
+    // (see firebase/functions/index.js) — clients can read their own,
+    // toggle the "read" flag, and delete their own, but never create one.
+    // ---------------------------------------------------------------
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow update: if isSignedIn() &&
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+
+      allow create: if false;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+  }
+}

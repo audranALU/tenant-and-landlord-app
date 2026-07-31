@@ -1,22 +1,22 @@
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
 
-  User? _user;
+  firebase_auth.User? _user;
   UserModel? _userModel; // holds the role
   bool _loadingRole = false;
 
-  User? get user => _user;
+  firebase_auth.User? get user => _user;
   UserModel? get userModel => _userModel;
   String? get role => _userModel?.role;
   bool get loadingRole => _loadingRole;
 
   AuthProvider() {
-    _authService.authStateChanges.listen((User? user) async {
+    _authService.authStateChanges.listen((firebase_auth.User? user) async {
       _user = user;
       if (user != null) {
         await _loadUserRole(user.uid);
@@ -50,7 +50,7 @@ class AuthProvider extends ChangeNotifier {
         role: role,
       );
       return null; // success
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       return _friendlyError(e.code);
     } catch (e) {
       return "Something went wrong. Please try again.";
@@ -62,7 +62,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _authService.signInWithEmail(email, password);
       return null;
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       return _friendlyError(e.code);
     } catch (e) {
       return "Something went wrong. Please try again.";
@@ -85,7 +85,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _authService.sendPasswordReset(email);
       return null;
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       return _friendlyError(e.code);
     } catch (e) {
       return "Could not send reset email.";

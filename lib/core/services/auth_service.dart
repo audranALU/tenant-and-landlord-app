@@ -1,18 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 
 class AuthService {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final firebase_auth.FirebaseAuth _firebaseAuth = firebase_auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+  Stream<firebase_auth.User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  User? get currentUser => _firebaseAuth.currentUser;
+  firebase_auth.User? get currentUser => _firebaseAuth.currentUser;
 
   /// SIGN IN with email + password
-  Future<UserCredential?> signInWithEmail(
+  Future<firebase_auth.UserCredential?> signInWithEmail(
     String email,
     String password,
   ) async {
@@ -24,7 +24,7 @@ class AuthService {
 
   /// CREATE ACCOUNT with email + password, then write the user's
   /// role document to Firestore. This is what makes role routing work.
-  Future<UserCredential?> createAccount({
+  Future<firebase_auth.UserCredential?> createAccount({
     required String email,
     required String password,
     required String name,
@@ -52,12 +52,12 @@ class AuthService {
 
   /// SIGN IN with Google. New Google users default to "tenant" role;
   /// existing users keep their stored role.
-  Future<UserCredential?> signInWithGoogle() async {
+  Future<firebase_auth.UserCredential?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) return null;
 
     final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.credential(
+    final credential = firebase_auth.GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );

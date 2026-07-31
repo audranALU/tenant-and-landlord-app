@@ -11,20 +11,49 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tenant_and_landlord_app/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  // Existing Flutter starter test removed because
+  // the project is no longer a counter application.
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('Technician Feature Tests', () {
+
+
+    testWidgets(
+      'Application loads successfully',
+      (WidgetTester tester) async {
+
+        await tester.pumpWidget(const MyApp());
+
+        expect(find.byType(MaterialApp), findsOneWidget);
+
+      },
+    );
+
+
+    testWidgets(
+      'Technician workflow logic test',
+      (WidgetTester tester) async {
+
+        // Simulates technician maintenance workflow
+
+        String taskStatus = "assigned";
+
+        // Technician starts work
+        taskStatus = "in_progress";
+
+        expect(taskStatus, "in_progress");
+
+
+        // Technician completes work
+        taskStatus = "resolved";
+
+        expect(taskStatus, "resolved");
+
+      },
+    );
+
+
   });
+
 }

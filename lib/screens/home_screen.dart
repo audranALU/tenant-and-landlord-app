@@ -1,54 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../core/providers/auth_provider.dart';
-
+import '../providers/auth_provider.dart';
 
 class HomeScreen extends StatelessWidget {
-
   const HomeScreen({super.key});
-
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final userEmail = authProvider.currentUser?.email ?? 'User';
 
     return Scaffold(
-
+      appBar: AppBar(title: const Text("Home")),
       body: Center(
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-
           children: [
-
-            const Text(
-              "Home Dashboard",
-              style: TextStyle(fontSize: 30),
-            ),
-
-
+            Text("Welcome $userEmail"),
+            const SizedBox(height: 20),
             ElevatedButton(
-
-              onPressed: (){
-
-                Provider.of<AuthProvider>(
-                  context,
-                  listen: false,
-                ).logout();
-
+              onPressed: () async {
+                await authProvider.logout();
+                Navigator.pushReplacementNamed(context, '/');
               },
-
               child: const Text("Logout"),
-
-            )
-
+            ),
           ],
-
         ),
-
       ),
-
     );
-
   }
-
 }

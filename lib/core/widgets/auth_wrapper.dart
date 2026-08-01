@@ -23,13 +23,12 @@ class AuthWrapper extends StatelessWidget {
     }
 
     // Logged in but still fetching the role document
-    if (auth.loadingRole || auth.role == null) {
-      return const Scaffold(
-        backgroundColor: AppColors.background,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColors.primary),
-        ),
-      );
+    // OPTIMIZATION: Show the default dashboard immediately instead of a spinner
+    // The role will update in the background and rebuild if needed
+    if (auth.loadingRole && auth.role == null) {
+      // Show tenant dashboard as optimistic default while loading
+      // This provides immediate feedback instead of a blocking spinner
+      return const TenantDashboard(optimisticMode: true);
     }
 
     // Route based on role

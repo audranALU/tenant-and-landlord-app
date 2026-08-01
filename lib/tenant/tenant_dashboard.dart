@@ -9,62 +9,100 @@ import 'create_request_screen.dart';
 import 'request_detail_screen.dart';
 
 class TenantDashboard extends StatelessWidget {
-  const TenantDashboard({super.key});
+  /// When true, shows a lightweight loading indicator while auth finishes
+  final bool optimisticMode;
+  const TenantDashboard({super.key, this.optimisticMode = false});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CreateRequestScreen()),
-          );
-        },
-        backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          "Report Issue",
-          style: AppTextStyles.buttonMedium.copyWith(color: Colors.white),
-        ),
-      ),
-      body: Consumer<MaintenanceProvider>(
-        builder: (context, provider, _) {
-          if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            );
-          }
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppColors.background,
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CreateRequestScreen()),
+              );
+            },
+            backgroundColor: AppColors.primary,
+            icon: const Icon(Icons.add, color: Colors.white),
+            label: Text(
+              "Report Issue",
+              style: AppTextStyles.buttonMedium.copyWith(color: Colors.white),
+            ),
+          ),
+          body: Consumer<MaintenanceProvider>(
+            builder: (context, provider, _) {
+              if (provider.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                );
+              }
 
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(child: _buildHeader(context, provider)),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-                  child: Text("Your Requests", style: AppTextStyles.h3),
-                ),
-              ),
-              if (provider.requests.isEmpty)
-                SliverToBoxAdapter(child: _buildEmptyState())
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => _buildRequestCard(
-                        context,
-                        provider.requests[index],
-                      ),
-                      childCount: provider.requests.length,
+              return CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(child: _buildHeader(context, provider)),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                      child: Text("Your Requests", style: AppTextStyles.h3),
                     ),
                   ),
-                ),
-            ],
-          );
-        },
-      ),
+                  if (provider.requests.isEmpty)
+                    SliverToBoxAdapter(child: _buildEmptyState())
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => _buildRequestCard(
+                            context,
+                            provider.requests[index],
+                          ),
+                          childCount: provider.requests.length,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ),
+        if (optimisticMode)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    "Finishing login...",
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 

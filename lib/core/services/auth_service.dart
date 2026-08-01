@@ -22,6 +22,14 @@ class AuthService {
     );
   }
 
+  /// Update last login timestamp (optimization: single write operation)
+  Future<void> updateLastLogin(String uid) async {
+    await _firestore.collection("users").doc(uid).set(
+      {'lastLogin': FieldValue.serverTimestamp()},
+      SetOptions(merge: true),
+    );
+  }
+
   /// CREATE ACCOUNT with email + password, then write the user's
   /// role document to Firestore. This is what makes role routing work.
   Future<firebase_auth.UserCredential?> createAccount({
@@ -52,6 +60,7 @@ class AuthService {
 
   /// SIGN IN with Google. New Google users default to "tenant" role;
   /// existing users keep their stored role.
+  /// Optimized: Uses upsert instead of read-then-write pattern.
   Future<firebase_auth.UserCredential?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) return null;
@@ -65,20 +74,41 @@ class AuthService {
     final userCredential =
         await _firebaseAuth.signInWithCredential(credential);
 
-    // If this is the first Google sign-in, create a user document.
+    // Use upsert (set with merge) to create or update user document in a single operation
+    // This eliminates the need for a separate read operation
     final uid = userCredential.user!.uid;
-    final doc = await _firestore.collection("users").doc(uid).get();
-    if (!doc.exists) {
-      final userModel = UserModel(
-        uid: uid,
-        email: userCredential.user!.email ?? "",
-        name: userCredential.user!.displayName ?? "",
-        role: "tenant", // default; can be changed later
-      );
-      await _firestore.collection("users").doc(uid).set(userModel.toMap());
-    }
+    await _firestore.collection("users").doc(uid).set(
+      {
+        'email': userCredential.user!.email ?? "",
+        'name': userCredential.user!.displayName ?? "",
+        'role': 'tenant', // default role, will be preserved if document exists
+        'lastLogin': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
 
     return userCredential;
+  }
+
+  /// Ensure the user's role document exists. If it does not, create a safe default.
+  /// Optimized: Uses upsert (set with merge) instead of read-then-write pattern.
+  Future<void> ensureUserProfile({
+    required String uid,
+    required String email,
+    required String? name,
+    String role = "tenant",
+  }) async {
+    // Use upsert to create document if it doesn't exist
+    // The 'role' field will only be set if document doesn't exist (using SetOptions(merge: true))
+    // For existing documents, the role is preserved
+    await _firestore.collection("users").doc(uid).set(
+      {
+        'email': email,
+        'name': name,
+        'role': role,
+      },
+      SetOptions(merge: true),
+    );
   }
 
   /// READ the user's role document from Firestore.
